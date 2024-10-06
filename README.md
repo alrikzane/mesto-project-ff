@@ -1,2 +1,1 @@
-# Проектная работа Mesto
-
+https://github.com/alrikzane/mesto-project-ff.git
