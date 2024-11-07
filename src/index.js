@@ -1,32 +1,47 @@
 import './pages/index.css';
-import { initialCards } from './cards';
+import {openModal, closeModal, openImageModal, closeImageModal} from './components/modal';
+import {initialCards, publishCard} from './components/cards';
 
-const cardTemplate = document.querySelector('#card-template').content.querySelector('.card');
-const galleryList = document.querySelector(".places__list");
 
-function deleteCard(event){
-  const cardToDelete = event.target.closest('.card');
-  cardToDelete.remove();
-};
+const profileEditButton = document.querySelector('.profile__edit-button');
+const newCardButton = document.querySelector('.profile__add-button');
+const cardList = document.querySelector('.places__list');
+const editModal = document.querySelector('.popup_type_edit');
+const newCardModal = document.querySelector('.popup_type_new-card');
+const imageModal = document.querySelector('.popup_type_image');
 
-function getCard(name, link, callback){
-  const card =  cardTemplate.cloneNode(true);
-  const cardImage = card.querySelector(".card__image");
-  cardImage.src = link;
-  cardImage.alt = name;
-  card.querySelector(".card__title").innerText = name;
-  const cardDeleteButton = card.querySelector(".card__delete-button");
-  cardDeleteButton.addEventListener('click', callback);
-  return card
-}
 
-function publishCard(name, link, callback) {
-  galleryList.append(getCard(name, link, callback));
-}
+profileEditButton.addEventListener('click', evt => openModal(editModal));
+newCardButton.addEventListener('click', evt => openModal(newCardModal));
+cardList.addEventListener('click', evt =>  openImageModal(evt, imageModal));
+
+
+editModal.addEventListener('click', evt => {
+  if(evt.target.classList.contains('popup') || evt.target.classList.contains('popup__close')){
+    closeModal(editModal);
+  }
+});
+
+newCardModal.addEventListener('click', evt => {
+  if(evt.target.classList.contains('popup') || evt.target.classList.contains('popup__close')){
+    closeModal(newCardModal);
+  }
+});
+
+imageModal.addEventListener('click', evt => {
+  if(evt.target.classList.contains('popup') || evt.target.classList.contains('popup__close')){
+    closeImageModal(imageModal);
+  }
+});
 
 initialCards.forEach(card => {
-  publishCard(card.name, card.link, deleteCard);
+  publishCard(card.name, card.link);
 })
+
+
+
+
+
 
 
 
