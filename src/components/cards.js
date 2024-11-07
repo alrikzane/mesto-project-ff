@@ -1,6 +1,8 @@
+import {closeModal} from './modal';
+
 const cardTemplate = document.querySelector('#card-template').content.querySelector('.card');
 const galleryList = document.querySelector('.places__list');
-import {closeModal} from './modal';
+
 
 const initialCards = [
     {
