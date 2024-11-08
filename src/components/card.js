@@ -8,7 +8,7 @@ function handleLike(evt){
   evt.target.classList.toggle('card__like-button_is-active');
 }
 
-function getCard(name, link){
+function getCard(name, link, imageZoom){
   const card =  cardTemplate.cloneNode(true);
   const cardImage = card.querySelector('.card__image');  
   cardImage.src = link;
@@ -18,6 +18,7 @@ function getCard(name, link){
   cardDeleteButton.addEventListener('click',() => deleteCard(card));
   const likeButton = card.querySelector('.card__like-button');
   likeButton.addEventListener('click', handleLike);
+  cardImage.addEventListener('click', imageZoom);
   return card
 }
 

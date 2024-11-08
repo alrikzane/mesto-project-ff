@@ -18,14 +18,8 @@ profileEditButton.addEventListener('click', () => {
   openModal(editModal);
 });
 newCardButton.addEventListener('click', () => openModal(newCardModal));
-cardList.addEventListener('click', evt =>  {
-  if (evt.target.classList.contains('card__image')){
-    openModal(imageModal);    
-    img.src = evt.target.src;
-    img.alt = evt.target.alt;
-    caption.textContent = evt.target.alt;
-  }
-});
+
+
 
 [editModal, newCardModal, imageModal].forEach(modal => {
   modal.addEventListener('click', evt => {
@@ -35,8 +29,15 @@ cardList.addEventListener('click', evt =>  {
   });
 });
 
+const imageZoom = (evt) => {
+  openModal(imageModal);    
+  img.src = evt.target.src;
+  img.alt = evt.target.alt;
+  caption.textContent = evt.target.alt;
+}
+
 function publishCard(name, link) {
-  galleryList.prepend(getCard(name, link));
+  galleryList.prepend(getCard(name, link, imageZoom));
 }
 
 initialCards.forEach(card => {
