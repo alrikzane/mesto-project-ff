@@ -1,7 +1,4 @@
-import {closeModal} from './modal';
-
 const cardTemplate = document.querySelector('#card-template').content.querySelector('.card');
-
 
 function deleteCard(card){
   card.remove();
