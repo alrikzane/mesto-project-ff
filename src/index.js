@@ -61,7 +61,7 @@ function handleFormCard(evt) {
 
 /* Edit profile form block */
 
-const formEditProfile = document.getElementsByName('edit-profile')[0];
+const formEditProfile = document.querySelector('.popup_type_edit').querySelector('.popup__form');
 const nameInput = formEditProfile.querySelector('.popup__input_type_name');
 const jobInput = formEditProfile.querySelector('.popup__input_type_description');
 const profileName = document.querySelector('.profile__title');
