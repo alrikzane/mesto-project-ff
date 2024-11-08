@@ -27,20 +27,12 @@ cardList.addEventListener('click', evt =>  {
   }
 });
 
-editModal.addEventListener('click', evt => {
-  if(evt.target.classList.contains('popup') || evt.target.classList.contains('popup__close')){
-    closeModal(editModal);
-  }
-});
-newCardModal.addEventListener('click', evt => {
-  if(evt.target.classList.contains('popup') || evt.target.classList.contains('popup__close')){
-    closeModal(newCardModal);
-  }
-});
-imageModal.addEventListener('click', evt => {
-  if(evt.target.classList.contains('popup') || evt.target.classList.contains('popup__close')){
-    closeModal(imageModal);
-  }
+[editModal, newCardModal, imageModal].forEach(modal => {
+  modal.addEventListener('click', evt => {
+    if(evt.target.classList.contains('popup') || evt.target.classList.contains('popup__close')){
+      closeModal(modal);
+    }
+  });
 });
 
 function publishCard(name, link) {
