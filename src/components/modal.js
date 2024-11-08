@@ -2,8 +2,8 @@ const page = document.querySelector('.page');
 const formEditProfile = document.getElementsByName('edit-profile')[0];
 const nameInput = formEditProfile.querySelector('.popup__input_type_name');
 const jobInput = formEditProfile.querySelector('.popup__input_type_description');
-const ProfileName = document.querySelector('.profile__title');
-const ProfileDescription = document.querySelector('.profile__description');
+const profileName = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
 
 const handleEscKey = (e) => {
   if (e.key === "Escape") {
@@ -26,8 +26,7 @@ function openImageModal(evt, modal) {
     const img = modal.querySelector('.popup__image');
     const caption = modal.querySelector('.popup__caption');
     img.src = evt.target.src;
-    caption.textContent = evt.target.alt;
-    
+    caption.textContent = evt.target.alt;    
   }
 }
 
@@ -36,25 +35,20 @@ function closeModal(modal) {
   page.removeEventListener('keydown',handleEscKey);
 }
 
-function closeImageModal(modal) {
-  modal.classList.remove('popup_is-opened');
-  page.removeEventListener('keydown',handleEscKey);
-}
-
 function fillProfileModal(){
-  nameInput.value = ProfileName.textContent;
-  jobInput.value = ProfileDescription.textContent;
+  nameInput.value = profileName.textContent;
+  jobInput.value = profileDescription.textContent;
 }
 
-function handleFormSubmit(evt) {
+function handleFormProfile(evt) {
   evt.preventDefault();
-  ProfileName.textContent = nameInput.value;
-  ProfileDescription.textContent = jobInput.value;
+  profileName.textContent = nameInput.value;
+  profileDescription.textContent = jobInput.value;
   closeModal(evt.target.closest('.popup_type_edit'));
 }
 
-formEditProfile.addEventListener('submit', handleFormSubmit);
+formEditProfile.addEventListener('submit', handleFormProfile);
 
-export {handleEscKey as handleEscKeyUp, openModal, closeModal, openImageModal, closeImageModal};
+export {handleEscKey as handleEscKeyUp, openModal, closeModal, openImageModal};
 
 
