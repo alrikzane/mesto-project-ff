@@ -29,7 +29,7 @@ newCardButton.addEventListener('click', () => openModal(newCardModal));
   });
 });
 
-const imageZoom = (evt) => {
+const zoomImage = (evt) => {
   openModal(imageModal);    
   img.src = evt.target.src;
   img.alt = evt.target.alt;
@@ -37,7 +37,7 @@ const imageZoom = (evt) => {
 }
 
 function publishCard(name, link) {
-  galleryList.prepend(getCard(name, link, imageZoom));
+  galleryList.prepend(getCard(name, link, zoomImage));
 }
 
 initialCards.forEach(card => {
