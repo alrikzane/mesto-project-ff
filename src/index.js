@@ -2,6 +2,7 @@ import './pages/index.css';
 import {openModal, closeModal} from './components/modal';
 import {getCard} from './components/card';
 import {initialCards} from './components/cards';
+import {checkValidity, toggleButtonState } from './components/validation';
 const galleryList = document.querySelector('.places__list');
 const profileEditButton = document.querySelector('.profile__edit-button');
 const newCardButton = document.querySelector('.profile__add-button');
@@ -22,7 +23,7 @@ newCardButton.addEventListener('click', () => openModal(newCardModal));
 
 
 [editModal, newCardModal, imageModal].forEach(modal => {
-  modal.addEventListener('click', evt => {
+  modal.addEventListener('mousedown', evt => {
     if(evt.target.classList.contains('popup') || evt.target.classList.contains('popup__close')){
       closeModal(modal);
     }
@@ -82,17 +83,34 @@ function fillProfileModal(){
   jobInput.value = profileDescription.textContent;
 }
 
+/* Validation */
+
+const setEventListeners = (formElement, selectors) => {
+  const inputList = Array.from(formElement.querySelectorAll(selectors.inputSelector));
+  const buttonElement = formElement.querySelector(selectors.submitButtonSelector);
+  inputList.forEach((inputElement) => {
+    inputElement.addEventListener('input', () => {
+      checkValidity(formElement, inputElement, selectors);
+      toggleButtonState(inputList, buttonElement, selectors);
+    });
+  });
+};
 
 
+const enableValidation = (selectors) => {
+  const formList = Array.from(document.querySelectorAll(selectors.formSelector));
+  formList.forEach((formElement) => {
+    setEventListeners(formElement, selectors);
+  });
+};
 
 
-
-
-
-
-
-
-
-
-
+enableValidation({
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+});
 
