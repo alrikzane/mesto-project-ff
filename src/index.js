@@ -1,7 +1,6 @@
 import './pages/index.css';
 import {openModal, closeModal} from './components/modal';
 import {getCard} from './components/card';
-import {initialCards} from './components/cards';
 import {checkValidity, toggleButtonState } from './components/validation';
 import {
   updateUserInfo, 
@@ -11,20 +10,26 @@ import {
   getCardsFromServer,
   editUserAvatar,
   startLike, 
-  stopLike} from './components/api';
+  stopLike,
+  toIdArray} from './components/api';
 const galleryList = document.querySelector('.places__list');
 const profileEditButton = document.querySelector('.profile__edit-button');
 const newCardButton = document.querySelector('.profile__add-button');
-const cardList = document.querySelector('.places__list');
 const editModal = document.querySelector('.popup_type_edit');
 const newCardModal = document.querySelector('.popup_type_new-card');
 const imageModal = document.querySelector('.popup_type_image');
 const img = imageModal.querySelector('.popup__image');
 const caption = imageModal.querySelector('.popup__caption');
 const editAvatarModal = document.querySelector('.popup_type_edit_avatar');
-
 const editAvatarButton = document.querySelector('.profile__image');
 const editAvatarButtonCover = editAvatarButton.querySelector('.profile__image__overlay');
+var myId;
+const formEditProfile = editModal.querySelector('.popup__form');
+const formEditProfileButton = formEditProfile.querySelector('.popup__button');
+const nameInput = formEditProfile.querySelector('.popup__input_type_name');
+const jobInput = formEditProfile.querySelector('.popup__input_type_description');
+const profileName = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
 editAvatarButton.addEventListener('mouseover', () => {
   editAvatarButtonCover.style.display = 'flex';
 })
@@ -34,11 +39,23 @@ editAvatarButton.addEventListener('mouseout', () => {
 editAvatarButton.addEventListener('click', () => openModal(editAvatarModal));
 
 
-const token = 'b4ccb494-d10e-4dc4-80ce-41c10ff84550';
-const serverLinkCohortId = 'https://mesto.nomoreparties.co/v1/wff-cohort-27';
-const userInfo = `${serverLinkCohortId}/users/me`;
-const cardServerLink = `${serverLinkCohortId}/cards`;
-const myId = '3ddd768593f43d868606cab2';
+Promise.all([
+  updateUserInfo(),
+  getCardsFromServer()  
+])
+.then((array) =>{
+  const [currentUser, cards] = array;
+  myId = currentUser._id;
+  profileName.textContent = currentUser.name;
+  profileDescription.textContent = currentUser.about;
+  editAvatarButton.style.backgroundImage = `url(${currentUser.avatar})`;
+  cards.reverse();
+  cards.forEach(card => {
+    const whoLiked = toIdArray(card.likes);
+    publishCardLocal(card.name, card.link, card.owner._id, card._id, whoLiked);
+  })
+  
+})
 
 profileEditButton.addEventListener('click', () => {
   fillProfileModal();
@@ -86,21 +103,10 @@ formNewPlace.addEventListener('submit', handleFormCard);
 function handleFormCard(evt) {
   evt.preventDefault();
   formNewPlaceButton.textContent = 'Сохраняем...';
-  addNewCardRemote(placeInput, linkInput, formNewPlaceButton, newCardModal, publishCardLocal ,closeModal);
+  addNewCardRemote(placeInput, linkInput, formNewPlaceButton, newCardModal, publishCardLocal ,closeModal, myId);
 }
 
 /* Edit profile form block */
-
-const formEditProfile = editModal.querySelector('.popup__form');
-const formEditProfileButton = formEditProfile.querySelector('.popup__button');
-const nameInput = formEditProfile.querySelector('.popup__input_type_name');
-const jobInput = formEditProfile.querySelector('.popup__input_type_description');
-const profileName = document.querySelector('.profile__title');
-const profileDescription = document.querySelector('.profile__description');
-
-
-updateUserInfo(profileName, profileDescription, editAvatarButton);
-
 
 formEditProfile.addEventListener('submit', handleFormProfile);
 
@@ -162,6 +168,5 @@ enableValidation({
   errorClass: 'popup__error_visible'
 });
 
-getCardsFromServer(publishCardLocal);
 
 

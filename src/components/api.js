@@ -3,8 +3,7 @@ const config = {
   headers: {
     authorization: 'b4ccb494-d10e-4dc4-80ce-41c10ff84550',
     'Content-Type': 'application/json'
-  },
-  myId :'3ddd768593f43d868606cab2',
+  }
 }
 
 const handleResponse = (res) => {
@@ -15,18 +14,12 @@ const handleResponse = (res) => {
 };
 
 
-const updateUserInfo = (profileName, profileDescription, editAvatarButton) => {
+const updateUserInfo = () => 
   fetch(`${config.baseUrl}/users/me`, {
     method: 'GET', 
     headers: config.headers
   })
   .then(res => handleResponse(res))
-  .then((user) => {
-    profileName.textContent = user.name;
-    profileDescription.textContent = user.about;
-    editAvatarButton.style.backgroundImage = `url(${user.avatar})`;
-  })
-}
 
 
 const editUserInfo = (newName, newDescription, profileName, profileDescription, editModal, formEditProfileButton, closeModal) => {
@@ -52,7 +45,7 @@ const editUserInfo = (newName, newDescription, profileName, profileDescription, 
 }
 
 
-const addNewCardRemote = (placeInput, linkInput, formNewPlaceButton, newCardModal, publishCardLocal, closeModal) => {
+const addNewCardRemote = (placeInput, linkInput, formNewPlaceButton, newCardModal, publishCardLocal, closeModal, myId) => {
   fetch(`${config.baseUrl}/cards`, {
     method: 'POST',
     body: JSON.stringify({
@@ -63,7 +56,7 @@ const addNewCardRemote = (placeInput, linkInput, formNewPlaceButton, newCardModa
   })
   .then(res => handleResponse(res))
   .then((card) => {
-    publishCardLocal (placeInput.value, linkInput.value, config.myId, card._id, toIdArray(card.likes));
+    publishCardLocal (placeInput.value, linkInput.value, myId, card._id, toIdArray(card.likes));
     placeInput.value = '';
     linkInput.value = '';
     closeModal(newCardModal);
@@ -87,19 +80,12 @@ function deleteCardRemote(cardId) {
   });  
 }
 
-const getCardsFromServer = (publishCardLocal) =>
+const getCardsFromServer = () =>
   fetch(`${config.baseUrl}/cards`, {
     method: 'GET',
     headers: config.headers
   })
   .then(res => handleResponse(res))
-  .then((result) => {
-    result.reverse();
-    result.forEach(card => {
-      const whoLiked = toIdArray(card.likes);
-      publishCardLocal(card.name, card.link, card.owner._id, card._id, whoLiked);
-    })
-  });
 
 const editUserAvatar = (avatarInput,editAvatarButton,editAvatarFormButton, evt, closeModal) => {
   fetch(`${config.baseUrl}/users/me/avatar`, {
@@ -120,7 +106,6 @@ const editUserAvatar = (avatarInput,editAvatarButton,editAvatarFormButton, evt, 
   })
   ;
 }
-
 
 
 const startLike = (cardId, likesCounter, likeButton) => {
@@ -144,15 +129,16 @@ const stopLike = (cardId, likesCounter, likeButton) => {
   })
   .then(res => handleResponse(res))
   .then((result) => {
-    console.log(result);
     likesCounter.innerText = Number(likesCounter.innerText) - 1;
     likeButton.classList.toggle('card__like-button_is-active');
   });  
 }
 
+
 const toIdArray = (array) => {
   return Array.from(array).map(like => like._id)
 }
+
 
 export {
   updateUserInfo, 
@@ -163,4 +149,5 @@ export {
   editUserAvatar,
   startLike,
   stopLike,
+  toIdArray
 };

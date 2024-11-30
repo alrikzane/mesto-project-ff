@@ -36,6 +36,9 @@ function getCard(cardData, myId, zoomImage, deleteCardRemote, startLike, stopLik
   likeButton.addEventListener('click', evt =>{
     handleLike(evt, startLike, stopLike, cardData.cardId, likesCounterElement);
   } );
+  console.log(cardData.likesIdList);
+  console.log('___________________');
+  console.log(myId);
   if (cardData.likesIdList.includes(myId)) {
     likeButton.classList.add('card__like-button_is-active');
   }
