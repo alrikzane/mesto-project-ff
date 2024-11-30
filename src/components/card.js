@@ -7,13 +7,10 @@ function deleteCard(card){
 function handleLike(evt, startLike, stopLike, cardId, likesCounter) {
   if (evt.target.classList.contains('card__like-button')) {
     if (evt.target.classList.contains('card__like-button_is-active')) {
-      stopLike(cardId);
-      likesCounter.innerText = Number(likesCounter.innerText) - 1;
+      stopLike(cardId, likesCounter, evt.target);      
     } else {
-      startLike(cardId);
-      likesCounter.innerText = Number(likesCounter.innerText) + 1;
-    }
-    evt.target.classList.toggle('card__like-button_is-active');
+      startLike(cardId, likesCounter, evt.target);      
+    }    
   }  
 }
 

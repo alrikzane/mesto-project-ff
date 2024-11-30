@@ -117,7 +117,7 @@ const editUserAvatar = (avatarInput,editAvatarButton,editAvatarFormButton, evt, 
 
 
 
-const startLike = (cardId) => {
+const startLike = (cardId, likesCounter, likeButton) => {
   fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: 'PUT',    
     headers: config.headers
@@ -125,11 +125,14 @@ const startLike = (cardId) => {
   .then(res => res.json())
   .then((result) => {
     console.log(result);
-  });  
+    likesCounter.innerText = Number(likesCounter.innerText) + 1;
+    likeButton.classList.toggle('card__like-button_is-active');
+  });
+  
 }
 
 
-const stopLike = (cardId) => {
+const stopLike = (cardId, likesCounter, likeButton) => {
   fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: 'DELETE',    
     headers: config.headers
@@ -137,6 +140,8 @@ const stopLike = (cardId) => {
   .then(res => res.json())
   .then((result) => {
     console.log(result);
+    likesCounter.innerText = Number(likesCounter.innerText) - 1;
+    likeButton.classList.toggle('card__like-button_is-active');
   });  
 }
 
