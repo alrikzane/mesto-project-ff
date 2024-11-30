@@ -53,9 +53,9 @@ Promise.all([
   cards.forEach(card => {
     const whoLiked = toIdArray(card.likes);
     publishCardLocal(card.name, card.link, card.owner._id, card._id, whoLiked);
-  })
-  
+  })  
 })
+.catch(err => console.log(err));
 
 profileEditButton.addEventListener('click', () => {
   fillProfileModal();

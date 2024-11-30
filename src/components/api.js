@@ -74,10 +74,8 @@ function deleteCardRemote(cardId) {
     method: 'DELETE',    
     headers: config.headers
   })
-  .then(res => res.json())
-  .then((result) => {
-    console.log(result.cardId);
-  });  
+  .then(res => handleResponse(res))
+  .catch(err => console.log(err));
 }
 
 const getCardsFromServer = () =>
@@ -86,6 +84,7 @@ const getCardsFromServer = () =>
     headers: config.headers
   })
   .then(res => handleResponse(res))
+  .catch(err => console.log(err));
 
 const editUserAvatar = (avatarInput,editAvatarButton,editAvatarFormButton, evt, closeModal) => {
   fetch(`${config.baseUrl}/users/me/avatar`, {
