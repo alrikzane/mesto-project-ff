@@ -3,6 +3,15 @@ import {openModal, closeModal} from './components/modal';
 import {getCard} from './components/card';
 import {initialCards} from './components/cards';
 import {checkValidity, toggleButtonState } from './components/validation';
+import {
+  updateUserInfo, 
+  editUserInfo, 
+  addNewCardRemote, 
+  deleteCardRemote, 
+  getCardsFromServer,
+  editUserAvatar,
+  startLike, 
+  stopLike} from './components/api';
 const galleryList = document.querySelector('.places__list');
 const profileEditButton = document.querySelector('.profile__edit-button');
 const newCardButton = document.querySelector('.profile__add-button');
@@ -68,85 +77,37 @@ function publishCardLocal(name, link, ownerId, cardId, likesIdList) {
 /* Add new place form block */
 
 const formNewPlace = newCardModal.querySelector('.popup__form');
+const formNewPlaceButton = formNewPlace.querySelector('.popup__button');
 const placeInput = formNewPlace.querySelector('.popup__input_type_card-name');
 const linkInput = formNewPlace.querySelector('.popup__input_type_url');
 
 formNewPlace.addEventListener('submit', handleFormCard);
 
 function handleFormCard(evt) {
-  evt.preventDefault();  
-  const cardValue = placeInput.value;
-  const cardLink = linkInput.value;
-  addNewCardRemote(cardValue, cardLink);
-  
-  placeInput.value = '';
-  linkInput.value = '';
-  closeModal(newCardModal);
+  evt.preventDefault();
+  formNewPlaceButton.textContent = 'Сохраняем...';
+  addNewCardRemote(placeInput, linkInput, formNewPlaceButton, newCardModal, publishCardLocal ,closeModal);
 }
 
 /* Edit profile form block */
 
-const formEditProfile = document.querySelector('.popup_type_edit').querySelector('.popup__form');
+const formEditProfile = editModal.querySelector('.popup__form');
+const formEditProfileButton = formEditProfile.querySelector('.popup__button');
 const nameInput = formEditProfile.querySelector('.popup__input_type_name');
 const jobInput = formEditProfile.querySelector('.popup__input_type_description');
 const profileName = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 
-const getUserInfo = () => {
-  fetch(userInfo, {
-    method: 'GET', 
-    headers: {
-      authorization: token
-    }
-  })
-  .then(res => res.json())
-  .then((result) => {
-/*     console.log(result.name);
-    console.log(result.about);
-    console.log(result.avatar);
-    console.log(result._id);
-    console.log(result.cohort); */
-    profileName.textContent = result.name;
-    profileDescription.textContent = result.about;
-    editAvatarButton.style.backgroundImage = `url(${result.avatar})`;    
-  })
-}
-getUserInfo();
 
-const editUserInfo = (newName, newDescription) => {
-  fetch(userInfo, {
-    method: 'PATCH',
-    headers: {
-      authorization: token,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      name: newName,
-      about: newDescription
-    })
-  });
-}
+updateUserInfo(profileName, profileDescription, editAvatarButton);
 
-const editUserAvatar = (url) => {
-  fetch(`${userInfo}/avatar`, {
-    method: 'PATCH',
-    headers: {
-      authorization: token,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      avatar: url
-    })
-  });
-}
 
 formEditProfile.addEventListener('submit', handleFormProfile);
 
 function handleFormProfile(evt) {
   evt.preventDefault();
-  editUserInfo(nameInput.value, jobInput.value);
-  getUserInfo();
-  closeModal(evt.target.closest('.popup_type_edit'));
+  formEditProfileButton.textContent = 'Сохраняем...';
+  editUserInfo(nameInput.value, jobInput.value, profileName, profileDescription, editModal, formEditProfileButton, closeModal);
 }
 
 function fillProfileModal(){
@@ -163,10 +124,12 @@ formEditAvatar.addEventListener('submit', handleFormAvatar);
 
 function handleFormAvatar(evt) {
   evt.preventDefault();
-  editUserAvatar(avatarInput.value);
-  editAvatarButton.style.backgroundImage = `url(${avatarInput.value})`;
-  closeModal(evt.target.closest('.popup_type_edit_avatar'));
+  const editAvatarFormButton = formEditAvatar.querySelector('.popup__button');
+  editAvatarFormButton.textContent = 'Сохраняем...';
+  editUserAvatar(avatarInput, editAvatarButton, editAvatarFormButton, evt, closeModal);  
 }
+
+
 /* Validation */
 
 const setEventListeners = (formElement, selectors) => {
@@ -179,6 +142,7 @@ const setEventListeners = (formElement, selectors) => {
     });
   });
 };
+
 
 
 const enableValidation = (selectors) => {
@@ -198,91 +162,4 @@ enableValidation({
   errorClass: 'popup__error_visible'
 });
 
-const toIdArray = (array) => {
-  return Array.from(array).map(like => like._id)
-}
-
-/* publish cards */
-
-fetch(cardServerLink, {
-  method: 'GET',
-  headers: {
-    authorization: token
-  }
-})
-.then(res => res.json())
-.then((result) => {
-  result.reverse();
-  result.forEach(card => {
-    const whoLiked = toIdArray(card.likes);
-    publishCardLocal(card.name, card.link, card.owner._id, card._id, whoLiked);
-  })
-});
-
-
-const addNewCardRemote = (cardName, cardURL) => {
-  fetch(cardServerLink, {
-    method: 'POST',
-    body: JSON.stringify({
-      name: cardName,
-      link: cardURL
-    }),
-    headers: {
-      authorization: token,
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(res => res.json())
-  .then((card) => {
-    publishCardLocal (cardName, cardURL, myId, card._id, toIdArray(card.likes));
-  });  
-}
-
-
-function deleteCardRemote(cardId) {
-  fetch(`${cardServerLink}${cardId}`, {
-    method: 'DELETE',    
-    headers: {
-      authorization: token,
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(res => res.json())
-  .then((result) => {
-    console.log(result.cardId);
-  });  
-}
-
-const startLike = (cardId) => {
-  fetch(`${cardServerLink}/likes/${cardId}`, {
-    method: 'PUT',    
-    headers: {
-      authorization: token,
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(res => res.json())
-  .then((result) => {
-    console.log(result);
-  });  
-}
-
-const stopLike = (cardId) => {
-  fetch(`${cardServerLink}/likes/${cardId}`, {
-    method: 'DELETE',    
-    headers: {
-      authorization: token,
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(res => res.json())
-  .then((result) => {
-    console.log(result);
-  });  
-}
-
-
-/* TODO
-
-saving animation
-*/
+getCardsFromServer(publishCardLocal);
