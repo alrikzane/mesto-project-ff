@@ -7,13 +7,20 @@ const config = {
   myId :'3ddd768593f43d868606cab2',
 }
 
+const handleResponse = (res) => {
+  if (res.ok) {
+    return res.json();
+  }
+  return Promise.reject(res.status);
+};
+
 
 const updateUserInfo = (profileName, profileDescription, editAvatarButton) => {
   fetch(`${config.baseUrl}/users/me`, {
     method: 'GET', 
     headers: config.headers
   })
-  .then(res => res.json())
+  .then(res => handleResponse(res))
   .then((user) => {
     profileName.textContent = user.name;
     profileDescription.textContent = user.about;
@@ -31,7 +38,7 @@ const editUserInfo = (newName, newDescription, profileName, profileDescription, 
       about: newDescription
     })
   })
-  .then(res => res.json())
+  .then(res => handleResponse(res))
   .then((user) => {
     profileName.textContent = user.name;
     profileDescription.textContent = user.about;
@@ -54,7 +61,7 @@ const addNewCardRemote = (placeInput, linkInput, formNewPlaceButton, newCardModa
     }),
     headers: config.headers
   })
-  .then(res => res.json())
+  .then(res => handleResponse(res))
   .then((card) => {
     publishCardLocal (placeInput.value, linkInput.value, config.myId, card._id, toIdArray(card.likes));
     placeInput.value = '';
@@ -85,13 +92,12 @@ const getCardsFromServer = (publishCardLocal) =>
     method: 'GET',
     headers: config.headers
   })
-  .then(res => res.json())
+  .then(res => handleResponse(res))
   .then((result) => {
     result.reverse();
     result.forEach(card => {
       const whoLiked = toIdArray(card.likes);
       publishCardLocal(card.name, card.link, card.owner._id, card._id, whoLiked);
-      console.log(card._id);
     })
   });
 
@@ -103,7 +109,7 @@ const editUserAvatar = (avatarInput,editAvatarButton,editAvatarFormButton, evt, 
       avatar: avatarInput.value
     })
   })
-  .then(res => res.json())
+  .then(res => handleResponse(res))
   .then((res) => {
     editAvatarButton.style.backgroundImage = `url(${avatarInput.value})`;
     closeModal(evt.target.closest('.popup_type_edit_avatar'));
@@ -122,9 +128,8 @@ const startLike = (cardId, likesCounter, likeButton) => {
     method: 'PUT',    
     headers: config.headers
   })
-  .then(res => res.json())
+  .then(res => handleResponse(res))
   .then((result) => {
-    console.log(result);
     likesCounter.innerText = Number(likesCounter.innerText) + 1;
     likeButton.classList.toggle('card__like-button_is-active');
   });
@@ -137,7 +142,7 @@ const stopLike = (cardId, likesCounter, likeButton) => {
     method: 'DELETE',    
     headers: config.headers
   })
-  .then(res => res.json())
+  .then(res => handleResponse(res))
   .then((result) => {
     console.log(result);
     likesCounter.innerText = Number(likesCounter.innerText) - 1;

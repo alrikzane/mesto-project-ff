@@ -163,3 +163,5 @@ enableValidation({
 });
 
 getCardsFromServer(publishCardLocal);
+
+
