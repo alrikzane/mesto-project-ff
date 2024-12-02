@@ -22,7 +22,7 @@ const updateUserInfo = () =>
   .then(res => handleResponse(res))
 
 
-const editUserInfo = (newName, newDescription, profileName, profileDescription, editModal, formEditProfileButton, closeModal) => {
+const editUserInfo = (newName, newDescription) => 
   fetch(`${config.baseUrl}/users/me`, {
     method: 'PATCH',
     headers: config.headers,
@@ -32,51 +32,27 @@ const editUserInfo = (newName, newDescription, profileName, profileDescription, 
     })
   })
   .then(res => handleResponse(res))
-  .then((user) => {
-    profileName.textContent = user.name;
-    profileDescription.textContent = user.about;
-
-    closeModal(editModal.closest('.popup_type_edit'));
-  })
-  .catch(err => console.log(err))
-  .finally(() => {
-    formEditProfileButton.textContent = 'Сохранить';
-  });
-}
 
 
-const addNewCardRemote = (placeInput, linkInput, formNewPlaceButton, newCardModal, publishCardLocal, closeModal, myId) => {
+const addNewCardRemote = (placeName, placeLink) => 
   fetch(`${config.baseUrl}/cards`, {
     method: 'POST',
     body: JSON.stringify({
-      name: placeInput.value,
-      link: linkInput.value,
+      name: placeName,
+      link: placeLink,
     }),
     headers: config.headers
   })
   .then(res => handleResponse(res))
-  .then((card) => {
-    publishCardLocal (placeInput.value, linkInput.value, myId, card._id, toIdArray(card.likes));
-    placeInput.value = '';
-    linkInput.value = '';
-    closeModal(newCardModal);
-  })
-  .catch(err => console.log('ошибка',err))
-  .finally(() => {
-    formNewPlaceButton.textContent = 'Сохранить';
-  })
-  ;  
-}
 
 
-function deleteCardRemote(cardId) {
+const deleteCardRemote =(card, cardId) => 
   fetch(`${config.baseUrl}/cards/${cardId}`, {
     method: 'DELETE',    
     headers: config.headers
   })
-  .then(res => handleResponse(res))
-  .catch(err => console.log(err));
-}
+  .then(res => handleResponse(res))  
+
 
 const getCardsFromServer = () =>
   fetch(`${config.baseUrl}/cards`, {
@@ -84,59 +60,33 @@ const getCardsFromServer = () =>
     headers: config.headers
   })
   .then(res => handleResponse(res))
-  .catch(err => console.log(err));
 
-const editUserAvatar = (avatarInput,editAvatarButton,editAvatarFormButton, evt, closeModal) => {
+
+const editUserAvatar = (avatarLink) => 
   fetch(`${config.baseUrl}/users/me/avatar`, {
     method: 'PATCH',
     headers: config.headers,
     body: JSON.stringify({
-      avatar: avatarInput.value
+      avatar: avatarLink
     })
   })
-  .then(res => handleResponse(res))
-  .then((res) => {
-    editAvatarButton.style.backgroundImage = `url(${avatarInput.value})`;
-    closeModal(evt.target.closest('.popup_type_edit_avatar'));
-  })
-  .catch(err => console.log(err))
-  .finally(() => {
-    editAvatarFormButton.textContent = 'Сохранить';
-  })
-  ;
-}
+  .then(res => handleResponse(res))  
 
 
-const startLike = (cardId, likesCounter, likeButton) => {
+const startLike = (cardId) => 
   fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: 'PUT',    
     headers: config.headers
   })
   .then(res => handleResponse(res))
-  .then((result) => {
-    likesCounter.innerText = Number(likesCounter.innerText) + 1;
-    likeButton.classList.toggle('card__like-button_is-active');
-  });
-  
-}
 
 
-const stopLike = (cardId, likesCounter, likeButton) => {
+const stopLike = (cardId) => 
   fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: 'DELETE',    
     headers: config.headers
   })
-  .then(res => handleResponse(res))
-  .then((result) => {
-    likesCounter.innerText = Number(likesCounter.innerText) - 1;
-    likeButton.classList.toggle('card__like-button_is-active');
-  });  
-}
-
-
-const toIdArray = (array) => {
-  return Array.from(array).map(like => like._id)
-}
+  .then(res => handleResponse(res))   
 
 
 export {
@@ -148,5 +98,4 @@ export {
   editUserAvatar,
   startLike,
   stopLike,
-  toIdArray
 };
