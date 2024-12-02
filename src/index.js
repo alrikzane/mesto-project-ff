@@ -77,13 +77,19 @@ const resetForm = (modal) => {
   clearValidation(modal, validationSelectors);
 }
 
-[editModal, newCardModal, imageModal, editAvatarModal].forEach(modal => {
+[editModal, newCardModal, editAvatarModal].forEach(modal => {
   modal.addEventListener('mousedown', evt => {
     if(evt.target.classList.contains('popup') || evt.target.classList.contains('popup__close')){
       closeModal(modal);
       resetForm(modal);      
     }
   });
+});
+
+imageModal.addEventListener('mousedown', evt => {
+  if(evt.target.classList.contains('popup') || evt.target.classList.contains('popup__close')){
+    closeModal(imageModal);     
+  }
 });
 
 const zoomImage = (evt) => {
