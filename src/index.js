@@ -1,7 +1,7 @@
 import './pages/index.css';
 import {openModal, closeModal} from './components/modal';
 import {getCard} from './components/card';
-import {checkValidity, toggleButtonState } from './components/validation';
+import {enableValidation, clearValidation} from './components/validation';
 import {
   updateUserInfo, 
   editUserInfo, 
@@ -28,6 +28,17 @@ const nameInput = formEditProfile.querySelector('.popup__input_type_name');
 const jobInput = formEditProfile.querySelector('.popup__input_type_description');
 const profileName = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
+
+const validationSelectors = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+};
+
+
 editAvatarButton.addEventListener('mouseover', () => {
   editAvatarButtonCover.style.display = 'flex';
 })
@@ -56,16 +67,21 @@ Promise.all([
 
 profileEditButton.addEventListener('click', () => {
   fillProfileModal();
+  clearValidation(editModal, validationSelectors);
   openModal(editModal);
 });
 newCardButton.addEventListener('click', () => openModal(newCardModal));
 
-
+const resetForm = (modal) => {
+  modal.querySelector('.popup__form').reset();
+  clearValidation(modal, validationSelectors);
+}
 
 [editModal, newCardModal, imageModal, editAvatarModal].forEach(modal => {
   modal.addEventListener('mousedown', evt => {
     if(evt.target.classList.contains('popup') || evt.target.classList.contains('popup__close')){
       closeModal(modal);
+      resetForm(modal);      
     }
   });
 });
@@ -82,6 +98,7 @@ const deletecardCallback = (card, cardId) => {
   .then(() => {card.remove()})
   .catch(err => console.log(err))
 }
+
 
 function handleLike(evt, cardId, likesCounter) {
   if (evt.target.classList.contains('card__like-button')) {
@@ -135,6 +152,7 @@ function handleFormCard(evt) {
     placeInput.value = '';
     linkInput.value = '';
     closeModal(newCardModal);
+    resetForm(newCardModal);
   })
   .catch(err => console.log('ошибка',err))
   .finally(() => {
@@ -154,6 +172,7 @@ function handleFormProfile(evt) {
     profileName.textContent = user.name;
     profileDescription.textContent = user.about;
     closeModal(editModal.closest('.popup_type_edit'));
+    resetForm(editModal.closest('.popup_type_edit'));
   })
   .catch(err => console.log(err))
   .finally(() => {
@@ -181,6 +200,7 @@ function handleFormAvatar(evt) {
   .then((res) => {
     editAvatarButton.style.backgroundImage = `url(${avatarInput.value})`;
     closeModal(evt.target.closest('.popup_type_edit_avatar'));
+    resetForm(evt.target.closest('.popup_type_edit_avatar'));
   })
   .catch(err => console.log(err))
   .finally(() => {
@@ -191,36 +211,9 @@ function handleFormAvatar(evt) {
 
 /* Validation */
 
-const setEventListeners = (formElement, selectors) => {
-  const inputList = Array.from(formElement.querySelectorAll(selectors.inputSelector));
-  const buttonElement = formElement.querySelector(selectors.submitButtonSelector);
-  toggleButtonState(inputList, buttonElement, selectors);
-  inputList.forEach((inputElement) => {
-    inputElement.addEventListener('input', () => {
-      checkValidity(formElement, inputElement, selectors);
-      toggleButtonState(inputList, buttonElement, selectors);
-    });
-  });
-};
 
 
-
-const enableValidation = (selectors) => {
-  const formList = Array.from(document.querySelectorAll(selectors.formSelector));
-  formList.forEach((formElement) => {
-    setEventListeners(formElement, selectors);
-  });
-};
-
-
-enableValidation({
-  formSelector: '.popup__form',
-  inputSelector: '.popup__input',
-  submitButtonSelector: '.popup__button',
-  inactiveButtonClass: 'popup__button_disabled',
-  inputErrorClass: 'popup__input_type_error',
-  errorClass: 'popup__error_visible'
-});
+enableValidation(validationSelectors);
 
 
 
